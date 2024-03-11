@@ -15,8 +15,11 @@ class TJFU:
         self,
         host_name: str,
         host_port: int,
+        root_path: str,
         index_route: Route,
         socket_root: str = 'socket',
+        template_folder: str = 'templates',
+        static_folder: str = 'static',
         ignore_cors: bool = True,
         jwt_secret_key: str = None,
         jwt_access_token_expires: timedelta = timedelta(days=7),
@@ -29,6 +32,9 @@ class TJFU:
     ):
         self._host_name = host_name
         self._host_port = host_port
+        self._root_path = root_path
+        self._template_folder = template_folder
+        self._static_folder = static_folder
         self._socket_root = socket_root
         
         self._jwt_secret_key = jwt_secret_key
@@ -39,8 +45,13 @@ class TJFU:
         self._use_reloader = use_reloader
         self._log_output = log_output
         self._allow_unsafe_werkzeug = allow_unsafe_werkzeug
-        
-        self._app = Flask(__name__)
+
+        self._app = Flask(
+            __name__,
+            root_path=self._root_path,
+            template_folder=self._template_folder,
+            static_folder=self._static_folder
+        )
         
         if ignore_cors:
             CORS(self._app, origins='*')
