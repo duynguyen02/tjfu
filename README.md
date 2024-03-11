@@ -64,6 +64,9 @@ route.register_route(my_subroute)
 tjfu = TJFU(
     host_name="0.0.0.0",
     host_port=3100,
+    root_path=HERE,
+    template_folder='templates',
+    static_folder='static',
     index_route=route,
     socket_root="socket",
     ignore_cors=True,
