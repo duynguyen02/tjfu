@@ -1,0 +1,6 @@
+.vscode
+build
+dist
+.eggs
+venv
+main.py
