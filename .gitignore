@@ -4,3 +4,7 @@ dist
 .eggs
 venv
 main.py
+__pycache__
+module
+templates
+static
