@@ -1,108 +1,148 @@
 # TJFU
-Python library helps optimize Flask development
-
+Python library helps optimize Flask development to be flexible and object-oriented.
+#### Version: 2.0.0
+### Extensions have been integrated
+1. JWT
+2. SocketIO
+3. Limiter
 ### Installation
 ```
 pip install tjfu
 ```
 
 ### Get started
-Simple example:
+Define a route:
 
 ```Python
-from datetime import timedelta
-from flask_cors import CORS
-from flask_jwt_extended import get_jwt_identity, jwt_required
-from tjfu import TJFU, Route
+from flask_jwt_extended import jwt_required
+from tjfu import Route, TJFU
+
 
 class RouteIndex(Route):
-    def __init__(self):
+    def __init__(
+        self,
+        name: str
+    ):
         super().__init__("index", "/")
-        self._my_class_value = "My Class Value"        
-        self._blueprint.route('/')(self._index)
-        self._blueprint.route('/subroute')(self._subroute)
-        self._blueprint.route('/jwt_subroute')(self._jwt_subroute)
         
+        self._name = name
+        
+        self._blueprint.route('/')(self._index)
+        self._blueprint.route('/jwt')(self._jwt)
+        self._blueprint.route('/class_variable')(self._class_variable)
+        self._blueprint.route('/limiter')(self._limiter)
+    
+    # Basic route function
     @staticmethod
     def _index():
         return "Hello World!"
     
-    def _subroute(
-        self
-    ):
-        return {
-            "name": "subroute",
-            "value": self._my_class_value
-        }
-    
+    # JWT route function
+    @staticmethod
     @jwt_required()
-    def _jwt_subroute(
+    def _jwt():
+        return "Hello From JWT!"
+    
+    # Class variable route function
+    def _class_variable(
         self
     ):
-        identity = get_jwt_identity()
-        return identity
+        return f"Hello {self._name}!"
     
-class MySubRoute(Route):
-    def __init__(self, name: str):
-        super().__init__("mysubroute", "/mysubroute")
-        self._name = name
-        self._blueprint.route('/')(self._index)
-    
-    def _index(self):
-        return f'Hello {self._name}'
-
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', '*')
-    response.headers.add('Access-Control-Allow-Methods', '*')
-    return response
-
-my_subroute = MySubRoute("Olivia Parker")
-route = RouteIndex()
-route.register_route(my_subroute)
-
-tjfu = TJFU(
-    host_name="0.0.0.0",
-    host_port=3100,
-    root_path=HERE,
-    template_folder='templates',
-    static_folder='static',
-    index_route=route,
-    socket_root="socket",
-    ignore_cors=True,
-    jwt_secret_key="your_jwt_secret_key",
-    jwt_access_token_expires=timedelta(days=7),
-    jwt_refresh_token_expires=timedelta(days=8),
-    after_request=after_request,
-    debug=True,
-    use_reloader=True,
-    log_output=True,
-    allow_unsafe_werkzeug=True
-)
-tjfu.run()
+    # Limiter route function
+    @staticmethod
+    @TJFU.limiter().limit('1/second')
+    def _limiter():
+        return "Hello from Limiter!"
 ```
 
-Socket example:
+Configuration and run Flask:
 ```Python
-class CustomSocketHandler(SocketHandler):
-    def __init__(self):
-        super().__init__("message", "message", self.handler)
-        
-    def handler():
-        emit(
-            super().event,
-            "Hello From Default Socket Handler!",
-            super().namespace
-        )
+from os import path
+from datetime import timedelta
 
-socket_handler = CustomSocketHandler()
+from flask_socketio import emit
+from tjfu import TJFU, Route
+from tjfu.socket_handler import SocketHandler
 
-tjfu.register_socket_handler(
-    socket_handler
-)
+def error_404(error):
+    return "Not Found!!!", 404
 
-tjfu.emit(
-    socket_handler,
-    "Hello From Custom Socket Handler!"
-)
+def error_500(error):
+    return "Error!!!", 500
+
+if __name__ == '__main__':
+    """
+    The TJFU configuration must be placed
+    at the beginning of the main function.
+    """
+    HERE = path.abspath(path.dirname(__file__))
+    (
+        TJFU
+        .host_name("0.0.0.0") # required
+        .host_port(3100) # required        
+        .root_path(HERE) # optinal (default: '.')        
+        .template_folder("templates") # optinal (default: 'templates')
+        .static_folder("static") # optinal (default: 'static')
+        .jwt_secret_key("your_jwt_secret_key")
+            # optinal / enter value if you want to use JWT, 
+            # Otherwise the jwt_required function will throw an error
+        .jwt_access_token_expires(timedelta(days=7)) # optinal (default: 'timedelta(days=7)')
+        .jwt_refresh_token_expires(timedelta(days=14)) # optinal (default: 'timedelta(days=14)')
+        .socket_root("socket") # optinal (default: 'socket') 
+        .ignore_cors(True) # optinal (default: 'True')
+        .add_error_handler(404, error_404) # optional
+        .add_error_handler(500, error_500) # optional
+        .limiter_storage_uri("memory://") # optinal (default: 'memory://')
+        .default_limits(["200 per day", "50 per hour"]) # optinal (default: '[]')
+        .log_output(False) # optinal (default: 'True')
+        .debug(False) # optinal (default: 'True')
+        .use_reloader(False) # optinal (default: 'True')
+        .allow_unsafe_werkzeug(False) # optinal (default: 'True')
+        .build()
+    )
+    """
+    Absolutely do not define or import any Route
+    before calling the build() function because an error may occur.
+    """
+    
+    
+    from my_route_module import RouteIndex
+    """
+    Define route/subroute
+    """
+    class AnotherSubroute(Route):
+        def __init__(self):
+            super().__init__("another", "/another")
+    
+    # 0.0.0.0:3100/
+    route_index = RouteIndex("John Doe")
+    # 0.0.0.0:3100/another
+    route_index.register_route(AnotherSubroute())
+    
+    """
+    Define socket
+    """
+    class CustomSocketHandler(SocketHandler):
+        def __init__(self):
+            super().__init__("message", "message", self.handler)
+            
+        def handler():
+            emit(
+                super().event,
+                "Hello From Default Socket Handler!",
+                super().namespace
+            )
+
+    # 0.0.0.0:3100/socket/message
+    socket_handler = CustomSocketHandler()
+    TJFU.register_socket_handler(socket_handler)
+    
+    """
+    This function can only be used in other classes
+    after the TJFU.run() function has been called.
+    """
+    TJFU.emit(socket_handler, "Hello From Custom Socket Handler!")
+    
+    TJFU.run(route_index)
 ```

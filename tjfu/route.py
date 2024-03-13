@@ -13,6 +13,11 @@ class Route:
             self._name,
             __name__
         )
+        
+        self._blueprint.route('/')(self._index)
+    
+    def _index(self):
+        return f"Hello From: {self._name}"
     
     @property
     def name(self):

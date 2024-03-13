@@ -9,8 +9,8 @@ with open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 setup(
     name='tjfu',
     packages=find_packages(include=['tjfu']),
-    version='1.0.1',
-    description='Flask Utilities',
+    version='2.0.0',
+    description='Python library helps optimize Flask development to be flexible and object-oriented.',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='DuyNguyen02',
@@ -18,7 +18,8 @@ setup(
         "flask",
         "flask_cors",
         "flask_jwt_extended",
-        "flask_socketio"
+        "flask_socketio",
+        "flask_limiter"
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest==4.4.1'],
