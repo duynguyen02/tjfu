@@ -9,7 +9,7 @@ with open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 setup(
     name='tjfu',
     packages=find_packages(include=['tjfu']),
-    version='2.0.0',
+    version='3.0.0',
     description='Python library helps optimize Flask development to be flexible and object-oriented.',
     long_description=long_description,
     long_description_content_type="text/markdown",

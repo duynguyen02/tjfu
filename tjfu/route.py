@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 class Route:
     def __init__(
@@ -36,4 +36,23 @@ class Route:
             route.blueprint,
             url_prefix=route.url_prefix
         )
+
+class SimpleRenderTemplateRoute(Route):
+    def __init__(
+        self,
+        name: str,
+        url_prefix: str,
+        html_file: str
+    ):
+        super().__init__(name, url_prefix)
         
+        self._blueprint.route("/")(self._index)
+        
+        self._html_file = html_file
+    
+    def _index(self):
+        return render_template(
+            self._html_file
+        )
+    
+    

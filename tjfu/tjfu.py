@@ -1,14 +1,14 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 from datetime import timedelta
 
 from .route import Route
-from .socket_handler import SocketHandler
+from .tj_socket import SocketEvent, SocketHandle
 
 class MissingPropertyException(Exception):
     def __init__(self, err) -> None:
@@ -187,17 +187,21 @@ class TJFU:
             cors_allowed_origins="*",
             async_mode=TJFU._SOCKET_ASYNC_MODE
         )
-    
-    @staticmethod
-    def run(index_route):
-        if TJFU._IS_RUNNING:
-            return
         
+        
+    @staticmethod
+    def init_app(index_route: Route):
         TJFU._FLASK_APP.register_blueprint(
             index_route.blueprint,
             url_prefix=index_route.url_prefix
         )
+        return TJFU._FLASK_APP
     
+    @staticmethod
+    def run():
+        if TJFU._IS_RUNNING:
+            return
+        
         TJFU._IS_RUNNING = True
         
         TJFU._SOCKET_IO.run(
@@ -216,21 +220,48 @@ class TJFU:
         response.headers.add('Access-Control-Allow-Headers', '*')
         response.headers.add('Access-Control-Allow-Methods', '*')
         return response
-    
+        
     @staticmethod
-    def register_socket_handler(socket_handler: SocketHandler):
+    def register_socket_event(socket_event: SocketEvent, socket_handle: SocketHandle):
         TJFU._SOCKET_IO.on_event(
-            socket_handler.event,
-            socket_handler.handler,
-            f'{TJFU._SOCKET_ROOT}/{socket_handler.namespace}'
+            socket_event.event,
+            socket_handle.handle,
+            f'/{TJFU._SOCKET_ROOT}/{socket_event.namespace}'
+        )
+        
+    @staticmethod
+    def no_context_emit(
+        socket_event: SocketEvent,
+        message
+    ):
+        """
+        Send information to the client outside the socket context.
+        """
+        TJFU._SOCKET_IO.emit(
+            socket_event.event,
+            message,
+            namespace=f'/{TJFU._SOCKET_ROOT}/{socket_event.namespace}'
         )
 
     @staticmethod
-    def emit(socket_handler: SocketHandler, message):
-        TJFU._SOCKET_IO.emit(
-            socket_handler.event,
+    def emit(
+        socket_event: SocketEvent,
+        message,
+        broadcast=False,
+        callback=None,
+        to=None
+    ):
+        """
+        Send information to the client inside the socket handle context.
+        
+        """  
+        emit(
+            socket_event.event,
             message,
-            namespace=f'{TJFU._SOCKET_ROOT}/{socket_handler.namespace}'
+            namespace=f'/{TJFU._SOCKET_ROOT}/{socket_event.namespace}',            
+            broadcast=broadcast,
+            callback=callback,
+            to=to
         )
     
     
