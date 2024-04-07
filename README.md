@@ -1,6 +1,6 @@
 # TJFU
 Python library helps optimize Flask development to be flexible and object-oriented.
-#### Version: 1.0.0
+#### Version: 3.1.0
 ### Extensions have been integrated
 1. [JWT](https://flask-jwt-extended.readthedocs.io/en/stable/)
 2. [SocketIO](https://flask-socketio.readthedocs.io/en/latest/)
@@ -138,6 +138,41 @@ my_custom_route.register_route(another_my_custom_route)
 
 # You must register routes and sockets before calling the init_app function
 app = TJFU.init_app(index_route)
+
+# OTHER CODE...
+```
+Register Routes using Dictionary (>=3.1.0):
+```Python
+# OTHER CODE...
+
+app = TJFU.init_app(
+    Route("index", "/"), 
+    {
+        Route("api", "/api"):{
+            
+            Route("v1", "/v1"):{
+                
+                Route("user", "/user"):{
+            
+                }    
+                
+            }
+            
+        },
+        Route("tool", "/tool"):{
+            SimpleRenderTemplateRoute(
+                "my_tool",
+                "/my_tool",
+                "my_tool.html"
+            )
+        },
+        SimpleRenderTemplateRoute(
+            "hello_world",
+            "/hello_world",
+            "hello_world.html"
+        ): None
+    }
+)
 
 # OTHER CODE...
 ```

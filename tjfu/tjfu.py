@@ -187,10 +187,24 @@ class TJFU:
             cors_allowed_origins="*",
             async_mode=TJFU._SOCKET_ASYNC_MODE
         )
-        
+    
+    def _routes_map_register(index_route: Route, routes_map: dict):
+        if isinstance(routes_map, dict):
+            for route, sub_routes_map in routes_map.items():
+                if isinstance(route, Route):
+                    index_route.register_route(route)
+                    TJFU._routes_map_register(route, sub_routes_map)
+        elif isinstance(routes_map, (set, list, tuple)):
+            for route in routes_map:
+                if isinstance(route, Route):
+                    index_route.register_route(route)
         
     @staticmethod
-    def init_app(index_route: Route):
+    def init_app(index_route: Route, routes_map: dict=None):
+        
+        if routes_map is not None:
+            TJFU._routes_map_register(index_route, routes_map)
+        
         TJFU._FLASK_APP.register_blueprint(
             index_route.blueprint,
             url_prefix=index_route.url_prefix
