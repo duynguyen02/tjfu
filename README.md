@@ -1,6 +1,6 @@
 # TJFU
 Python library helps optimize Flask development to be flexible and object-oriented.
-#### Version: 3.1.0
+#### Version: 3.1.1
 ### Extensions have been integrated
 1. [JWT](https://flask-jwt-extended.readthedocs.io/en/stable/)
 2. [SocketIO](https://flask-socketio.readthedocs.io/en/latest/)
@@ -255,3 +255,10 @@ Simple HTML code to receive and send data from Socket
 
 </html>
 ```
+
+### Changelog
+- `1.0.0`: First version released. There is a problem in Socket implementation.
+- `2.0.0`: Edit the Socket structure. There is a problem deploying the application to the production environment.
+- `3.0.0`: The version is relatively stable, overcoming the problem of deploying applications in production environments.
+- `3.1.0`: Added the function of registering Routes using Routes Map
+- `3.1.1`: Fixed an issue where additional variables could not be added when inheriting the _index function in Route.

@@ -16,8 +16,8 @@ class Route:
         
         self._blueprint.route('/')(self._index)
     
-    def _index(self):
-        return f"Hello From: {self._name}"
+    def _index(self, *args, **kwargs):
+        return f"Hello from: {self._name}"
     
     @property
     def name(self):

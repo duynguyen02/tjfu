@@ -9,11 +9,12 @@ with open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 setup(
     name='tjfu',
     packages=find_packages(include=['tjfu']),
-    version='3.1.0',
+    version='3.1.1',
     description='Python library helps optimize Flask development to be flexible and object-oriented.',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='DuyNguyen02',
+    url="https://github.com/duynguyen02/tjfu",
     install_requires=[
         "flask",
         "flask_cors",
@@ -21,17 +22,15 @@ setup(
         "flask_socketio",
         "flask_limiter"
     ],
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest==4.4.1'],
-    test_suite='tests',
+    python_requires=">=3.9",
+    keywords=[
+        "Python",
+        "Flask"
+    ],
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Operating System :: OS Independent"
     ]
