@@ -53,8 +53,8 @@ TJFU
     .debug(False) # optinal (default: 'True')
     .use_reloader(False) # optinal (default: 'True')
     .allow_unsafe_werkzeug(False) # optinal (default: 'True')
-    .app_config('MY_SECRET_KEY', 'my_secret_key') # optional (>=3.2.0): use as app['MY_SECRET_KEY'] = 'my_secret_key'
-    .app_config('MY_SECRET_KEY_2', 'my_secret_key') # optional (>=3.2.0): use as app['MY_SECRET_KEY_2'] = 'my_secret_key'
+    .app_config('MY_SECRET_KEY', 'my_secret_key') # optional (>=3.2.0): use as app.config['MY_SECRET_KEY'] = 'my_secret_key'
+    .app_config('MY_SECRET_KEY_2', 'my_secret_key') # optional (>=3.2.0): use as app.config['MY_SECRET_KEY_2'] = 'my_secret_key'
     .build()
 }
 
