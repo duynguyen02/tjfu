@@ -1,6 +1,5 @@
 # TJFU
 Python library helps optimize Flask development to be flexible and object-oriented.
-#### Version: 3.1.1
 ### Extensions have been integrated
 1. [JWT](https://flask-jwt-extended.readthedocs.io/en/stable/)
 2. [SocketIO](https://flask-socketio.readthedocs.io/en/latest/)
@@ -31,8 +30,8 @@ def error_500(error):
     Absolutely do not define or import any Route
     before calling the build() function because an error may occur.
 """
-(
-    TJFU
+{
+TJFU
     .host_name("0.0.0.0") # required
     .host_port(3100) # required        
     .root_path(HERE) # optinal (default: '.')        
@@ -47,14 +46,17 @@ def error_500(error):
     .ignore_cors(True) # optinal (default: 'True')
     .add_error_handler(404, error_404) # optional
     .add_error_handler(500, error_500) # optional
+    .add_status_code_handler(500, error_500) # optional (>=3.2.0)
     .limiter_storage_uri("memory://") # optinal (default: 'memory://')
     .default_limits(["200 per day", "50 per hour"]) # optinal (default: '[]')
     .log_output(False) # optinal (default: 'True')
     .debug(False) # optinal (default: 'True')
     .use_reloader(False) # optinal (default: 'True')
     .allow_unsafe_werkzeug(False) # optinal (default: 'True')
+    .app_config('MY_SECRET_KEY', 'my_secret_key') # optional (>=3.2.0): use as app['MY_SECRET_KEY'] = 'my_secret_key'
+    .app_config('MY_SECRET_KEY_2', 'my_secret_key') # optional (>=3.2.0): use as app['MY_SECRET_KEY_2'] = 'my_secret_key'
     .build()
-)
+}
 
 from tjfu import Route
 
@@ -176,7 +178,13 @@ app = TJFU.init_app(
 
 # OTHER CODE...
 ```
-
+Get Flask App after TJFU.build() (>=3.2.0)
+```Python
+# Example
+from tjfu import TJFU
+from flask_mail import Mail, Message
+mail = Mail(TJFU.app())
+```
 Define a Socket Handle:
 ```Python
 # OTHER CODE...
@@ -262,3 +270,4 @@ Simple HTML code to receive and send data from Socket
 - `3.0.0`: The version is relatively stable, overcoming the problem of deploying applications in production environments.
 - `3.1.0`: Added the function of registering Routes using Routes Map
 - `3.1.1`: Fixed an issue where additional variables could not be added when inheriting the _index function in Route.
+- `3.2.0`: Assign keys/values to Flask App Config using TJFU.app_config(...,...), add function TJFU.app() to get Flask App after calling TJFU.build(), use the add_status_code_handler function instead of the add_error_handler function.
