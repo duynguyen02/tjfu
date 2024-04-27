@@ -185,6 +185,33 @@ from tjfu import TJFU
 from flask_mail import Mail, Message
 mail = Mail(TJFU.app())
 ```
+Get Extensions (JWT/Limiter/SocketIO) after TJFU.build() (>=3.3.0)
+```Python
+TJFU.jwt()
+TJFU.limiter()
+TJFU.socketio()
+```
+Add custom extensions to TJFU after TJFU.build() (>=3.3.0)
+```Python
+# OTHER CODE...
+
+from flask_mail import Mail, Message
+mail = Mail(TJFU.app())
+
+TJFU.add_extension(
+    'send_mail',
+    mail
+) 
+
+app = TJFU.init_app(index_route)
+
+# OTHER CODE...
+```
+And then you can take it out and use it in contexts (e.g. Route)
+```Python
+mail = TJFU.get_extension('send_mail')
+```
+
 Define a Socket Handle:
 ```Python
 # OTHER CODE...
@@ -271,3 +298,4 @@ Simple HTML code to receive and send data from Socket
 - `3.1.0`: Added the function of registering Routes using Routes Map
 - `3.1.1`: Fixed an issue where additional variables could not be added when inheriting the _index function in Route.
 - `3.2.0`: Assign keys/values to Flask App Config using TJFU.app_config(...,...), add function TJFU.app() to get Flask App after calling TJFU.build(), use the add_status_code_handler function instead of the add_error_handler function.
+- `3.3.0`: Build functions that take instances of extensions and add custom extensions.

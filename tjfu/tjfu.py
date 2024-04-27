@@ -58,6 +58,8 @@ class TJFU:
     # app config
     _APP_CONFIG = {}
     
+    # extensions
+    _EXTENSIONS = {}
     
     def _after_build_func(func):
         @wraps(func)
@@ -85,6 +87,28 @@ class TJFU:
     def app():
         return TJFU._FLASK_APP
     
+    @staticmethod
+    @_after_build_func
+    def jwt():
+        return TJFU._JWT
+    
+    @staticmethod
+    @_after_build_func
+    def socketio():
+        return TJFU._SOCKET_IO
+    
+    @staticmethod
+    @_after_build_func
+    def add_extension(key: str, ext):
+        TJFU._EXTENSIONS[key] = ext
+        
+    @staticmethod
+    @_after_build_func
+    def get_extension(key: str):
+        if key in TJFU._EXTENSIONS:
+            return TJFU._EXTENSIONS[key]
+        raise ValueError(f"Not found: {key} extension.")
+        
     @staticmethod
     @_build_func
     def app_config(key: str, value: str):
